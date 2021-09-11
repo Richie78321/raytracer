@@ -1,0 +1,6 @@
+[submodule "extern\\linalg"]
+	path = extern\\linalg
+	url = https://github.com/sgorsten/linalg.git
+[submodule "extern\\raylib"]
+	path = extern\\raylib
+	url = https://github.com/raysan5/raylib.git
