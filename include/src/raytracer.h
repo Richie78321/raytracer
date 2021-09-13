@@ -21,6 +21,15 @@ namespace rt {
     virtual RayIntersection getIntersection(const Ray& ray) const = 0;
   };
 
+  class Plane : public virtual SceneObject {
+  public:
+    Plane(float3 normal, float3 point);
+    virtual RayIntersection getIntersection(const Ray& ray) const;
+
+    float3 normal;
+    float3 point;
+  };
+
   class Sphere : public virtual SceneObject {
   public:
     Sphere(float3 center, float radius);
