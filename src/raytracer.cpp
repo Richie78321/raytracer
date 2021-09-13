@@ -1,19 +1,20 @@
+#include <algorithm>
 #include "raytracer.h"
 
 namespace rt {
   Scene::Scene(std::vector<std::shared_ptr<SceneObject>> sceneObjects) : sceneObjects(sceneObjects) {}
 
   std::vector<int> Scene::renderScene(const SceneCamera& camera) const {
-    float3 cameraUp = linalg::qrot(camera.rotation, { 0, 0, 1 });
-    float3 cameraRight = linalg::qrot(camera.rotation, { 1, 0, 0 });
-    float3 cameraForward = linalg::qrot(camera.rotation, { 0, 1, 0 });
+    float3 cameraUp = linalg::qzdir(camera.rotation);
+    float3 cameraRight = linalg::qxdir(camera.rotation);
+    float3 cameraForward = linalg::qydir(camera.rotation);
 
     float pixelRayIncrement = tan(camera.fov) / camera.resolution;
     float halfResolution = static_cast<float>(camera.resolution) / 2;
     std::vector<int> scene;
     for (int i = 0; i < camera.resolution; i++) {
       for (int j = 0; j < camera.resolution; j++) {
-        Ray pixelRay{ camera.position, linalg::normalize(cameraForward + ((i - halfResolution) * cameraRight) + ((j - halfResolution) * cameraUp)) };
+        Ray pixelRay{ camera.position, linalg::normalize(cameraForward + ((j - halfResolution) * pixelRayIncrement * cameraRight) + ((i - halfResolution) * pixelRayIncrement * cameraUp)) };
         scene.push_back(pixelRay.getRayColor(this->sceneObjects));
       }
     }
@@ -42,7 +43,11 @@ namespace rt {
   int Ray::getRayColor(const std::vector<std::shared_ptr<SceneObject>>& sceneObjects) const {
     // TODO: Add functionality here to make a more advanced raytracing engine.
     RayIntersection closestIntersection = this->getClosestIntersection(sceneObjects);
-    return closestIntersection.intersected ? 0xFFFFFF : 0;
+    if (!closestIntersection.intersected) {
+      return 0;
+    }
+
+    return 0x0000FF - 0x0000FF * std::max(linalg::dot(closestIntersection.surfaceNormal, float3 { 0, 0, -1 }), 0.f);
   }
 
   Sphere::Sphere(float3 center, float radius) : center(center), radius(radius) {}
@@ -59,8 +64,23 @@ namespace rt {
       return { false };
     } else if (determinant < 0.01f) {
       // One point
+      float3 intersectionPoint = (-b / (2 * a)) * ray.direction + ray.startPosition;
+      if (linalg::dot(intersectionPoint - ray.startPosition, ray.direction) > 0) {
+        return { true, intersectionPoint, linalg::normalize(intersectionPoint - this->center), this };
+      } else {
+        return { false };
+      }
     } else {
-      // Two points
+      float3 intersectionPoint = (float)((-b - sqrt(determinant)) / (2 * a)) * ray.direction + ray.startPosition;
+
+      if (linalg::dot(intersectionPoint - ray.startPosition, ray.direction) < 0) {
+        intersectionPoint = (float)((-b + sqrt(determinant)) / (2 * a)) * ray.direction + ray.startPosition;
+        if (linalg::dot(intersectionPoint - ray.startPosition, ray.direction) < 0) {
+          return { false };
+        }
+      }
+
+      return { true, intersectionPoint, linalg::normalize(intersectionPoint - this->center), this };
     }
   }
 }

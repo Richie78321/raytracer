@@ -1,0 +1,5 @@
+if(EXISTS "C:/Users/Richie/Desktop/raytracer/build/tests/spheretest[1]_tests.cmake")
+  include("C:/Users/Richie/Desktop/raytracer/build/tests/spheretest[1]_tests.cmake")
+else()
+  add_test(spheretest_NOT_BUILT spheretest_NOT_BUILT)
+endif()

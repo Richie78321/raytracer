@@ -42,7 +42,7 @@ namespace rt {
     bool intersected;
     float3 intersectionPosition;
     float3 surfaceNormal;
-    std::shared_ptr<SceneObject> objectIntersected;
+    const SceneObject* objectIntersected;
   };
   
   class Scene {
