@@ -47,7 +47,8 @@ namespace rt {
       return 0;
     }
 
-    return 0x0000FF - 0x0000FF * std::max(linalg::dot(closestIntersection.surfaceNormal, float3 { 0, 0, -1 }), 0.f);
+    // Calculate "light"
+    return 0x0000FF - 0x0000FF * std::max(linalg::dot(closestIntersection.surfaceNormal, linalg::normalize(float3{ 0, -1, -1 })), 0.f);
   }
 
   Sphere::Sphere(float3 center, float radius) : center(center), radius(radius) {}
