@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <string>
 #include <linalg.h>
 #include "raylib.h"
 #include "raytracer.h"
@@ -66,6 +67,7 @@ int main() {
 
   RenderTexture2D renderTarget = LoadRenderTexture(camera.resolution, camera.resolution);
 
+  int renderCount = 0;
   while (!WindowShouldClose()) {
     std::vector<int> render = scene.renderScene(camera);
 
@@ -81,6 +83,7 @@ int main() {
     BeginDrawing();
     ClearBackground(BLACK);
     DrawTextureEx(renderTarget.texture, { 0, 0 }, 0, (float)screenSize / camera.resolution, WHITE);
+    DrawText(std::to_string(GetFPS()).c_str(), 0, 0, 30, RAYWHITE);
     EndDrawing();
   }
   
