@@ -1,7 +1,10 @@
 #include <algorithm>
+#include <thread>
 #include "raytracer.h"
 
 namespace rt {
+  constexpr const int RAYTRACE_THREADS = 10;
+
   Scene::Scene(std::vector<std::shared_ptr<SceneObject>> sceneObjects) : sceneObjects(sceneObjects) {}
 
   std::vector<int> Scene::renderScene(const SceneCamera& camera) const {
@@ -11,12 +14,26 @@ namespace rt {
 
     float pixelRayIncrement = tan(camera.fov) / camera.resolution;
     float halfResolution = static_cast<float>(camera.resolution) / 2;
-    std::vector<int> scene;
-    for (int i = 0; i < camera.resolution; i++) {
-      for (int j = 0; j < camera.resolution; j++) {
-        Ray pixelRay{ camera.position, linalg::normalize(cameraForward + ((j - halfResolution) * pixelRayIncrement * cameraRight) + ((i - halfResolution) * pixelRayIncrement * cameraUp)) };
-        scene.push_back(pixelRay.getRayColor(this->sceneObjects));
-      }
+    std::vector<int> scene(camera.resolution * camera.resolution);
+
+    std::vector<std::thread> raytrace_threads;
+    int size_increment = (int)ceil((float)scene.size() / RAYTRACE_THREADS);
+    for (int i = 0; i < RAYTRACE_THREADS; i++) {
+      int start = std::min(i * size_increment, (int)scene.size());
+      int end = std::min((i + 1) * size_increment, (int)scene.size());
+
+      raytrace_threads.emplace_back([&, start, end]() {
+        for (int x = start; x < end; x++) {
+          int i = x / camera.resolution;
+          int j = x % camera.resolution;
+          Ray pixelRay{ camera.position, linalg::normalize(cameraForward + ((j - halfResolution) * pixelRayIncrement * cameraRight) + ((i - halfResolution) * pixelRayIncrement * cameraUp)) };
+          scene[x] = pixelRay.getRayColor(this->sceneObjects);
+        }
+      });
+    }
+
+    for (auto& thread : raytrace_threads) {
+      thread.join();
     }
 
     return scene;
