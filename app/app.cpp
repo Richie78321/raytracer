@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <chrono>
 #include <linalg.h>
 #include "raylib.h"
 #include "raytracer.h"
@@ -63,28 +64,36 @@ int main() {
   const int screenSize = 800;
 
   InitWindow(screenSize, screenSize, "Raytracer");
-  SetTargetFPS(30);
+  // SetTargetFPS(30);
 
   RenderTexture2D renderTarget = LoadRenderTexture(camera.resolution, camera.resolution);
 
-  int renderCount = 0;
   while (!WindowShouldClose()) {
+    // auto render_start = std::chrono::high_resolution_clock::now();
     std::vector<int> render = scene.renderScene(camera);
+    // auto render_end = std::chrono::high_resolution_clock::now();
+    // std::cout << "Render Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(render_end - render_start).count() << "\n";
 
     cameraControl(camera);
     
+    // auto texture_draw_start = std::chrono::high_resolution_clock::now();
     BeginTextureMode(renderTarget);
     ClearBackground(SKYBLUE);
     for (int i = 0; i < render.size(); i++) {
       DrawRectangle(i % camera.resolution, i / camera.resolution, 1, 1, GetColor(render[i]));
     }
     EndTextureMode();
+    // auto texture_draw_end = std::chrono::high_resolution_clock::now();
+    // std::cout << "Texture Draw Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(texture_draw_end - texture_draw_start).count() << "\n";
 
+    // auto texture_display_start = std::chrono::high_resolution_clock::now();
     BeginDrawing();
     ClearBackground(BLACK);
     DrawTextureEx(renderTarget.texture, { 0, 0 }, 0, (float)screenSize / camera.resolution, WHITE);
     DrawText(std::to_string(GetFPS()).c_str(), 0, 0, 30, RAYWHITE);
     EndDrawing();
+    // auto texture_display_end = std::chrono::high_resolution_clock::now();
+    // std::cout << "Texture Display Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(texture_display_end - texture_display_start).count() << "\n\n";
   }
   
   return 0;
