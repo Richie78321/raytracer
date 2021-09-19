@@ -41,4 +41,11 @@ TEST(SphereIntersection, HandlesCenterIntersection) {
   ASSERT_TRUE(intersection.intersected);
 }
 
-// TODO: Test that intersections from behind ray are not counted
+TEST(SphereIntersection, IgnoresIntersectionsBehindRay) {
+  Sphere sphere(float3{ 0, -10, 0 }, 4);
+  Ray ray { float3{ 0, 0, 0 }, float3{ 0, 1, 0 } };
+
+  RayIntersection intersection = sphere.getIntersection(ray);
+
+  ASSERT_FALSE(intersection.intersected);
+}
