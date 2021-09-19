@@ -58,7 +58,7 @@ void cameraControl(SceneCamera& camera) {
 int main() {
   std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(float3{ 0, 10, 0 }, 4);
   std::shared_ptr<Plane> plane = std::make_shared<Plane>(float3{ 0, 0, -1 }, float3{ 0, 0, 4 });
-  Scene scene {{ sphere, plane }};
+  Scene scene {{ sphere, plane }, { Light{ float3{ 0, 0, -10 }, 1, SCENE_WHITE } }};
   SceneCamera camera { float3{ 0, 0, 0 }, float4{ 0, 1, 0, 0 }, 60 * DEG2RAD, 250 };
 
   const int screenSize = 800;
@@ -78,7 +78,7 @@ int main() {
     
     // auto texture_draw_start = std::chrono::high_resolution_clock::now();
     BeginTextureMode(renderTarget);
-    ClearBackground(SKYBLUE);
+    ClearBackground(BLACK);
     for (int i = 0; i < render.size(); i++) {
       DrawRectangle(i % camera.resolution, i / camera.resolution, 1, 1, GetColor(render[i]));
     }

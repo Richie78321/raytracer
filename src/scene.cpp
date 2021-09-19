@@ -5,7 +5,7 @@
 namespace rt {
   constexpr const int RAYTRACE_THREADS = 10;
 
-  Scene::Scene(std::vector<std::shared_ptr<SceneObject>> sceneObjects) : sceneObjects(sceneObjects) {}
+  Scene::Scene(std::vector<std::shared_ptr<SceneObject>> sceneObjects, std::vector<Light> lights) : sceneObjects(sceneObjects), lights(lights) {}
 
   std::vector<int> Scene::renderScene(const SceneCamera& camera) const {
     float3 cameraUp = linalg::qzdir(camera.rotation);
@@ -27,7 +27,7 @@ namespace rt {
           int i = x / camera.resolution;
           int j = x % camera.resolution;
           Ray pixelRay{ camera.position, linalg::normalize(cameraForward + ((j - halfResolution) * pixelRayIncrement * cameraRight) + ((i - halfResolution) * pixelRayIncrement * cameraUp)) };
-          scene[x] = pixelRay.getRayColor(this->sceneObjects);
+          scene[x] = pixelRay.getRayColor(*this).toHex();
         }
       });
     }
@@ -37,6 +37,14 @@ namespace rt {
     }
 
     return scene;
+  }
+
+  const std::vector<std::shared_ptr<SceneObject>>& Scene::getSceneObjects() const {
+    return this->sceneObjects;
+  }
+
+  const std::vector<Light>& Scene::getLights() const {
+    return this->lights;
   }
 
   RayIntersection Ray::getClosestIntersection(const std::vector<std::shared_ptr<SceneObject>>& sceneObjects) const {
@@ -57,14 +65,12 @@ namespace rt {
     return closestIntersection;
   }
 
-  int Ray::getRayColor(const std::vector<std::shared_ptr<SceneObject>>& sceneObjects) const {
-    // TODO: Add functionality here to make a more advanced raytracing engine.
-    RayIntersection closestIntersection = this->getClosestIntersection(sceneObjects);
+  SceneColor Ray::getRayColor(const Scene& scene) const {
+    RayIntersection closestIntersection = this->getClosestIntersection(scene.getSceneObjects());
     if (!closestIntersection.intersected) {
       return 0;
     }
 
-    // Calculate "light"
-    return 0x0000FF - 0x0000FF * std::max(linalg::dot(closestIntersection.surfaceNormal, linalg::normalize(float3{ 0, -1, -1 })), 0.f);
+    return SCENE_WHITE * std::max(linalg::dot(closestIntersection.surfaceNormal, linalg::normalize(float3{ 0, -1, -1 })), 0.f);
   }
 }

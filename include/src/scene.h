@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <linalg.h>
+#include "light.h"
 
 namespace rt {
   using linalg::aliases::float3;
@@ -22,14 +23,6 @@ namespace rt {
   public:
     virtual RayIntersection getIntersection(const Ray& ray) const = 0;
   };
-  
-  struct Ray {
-    float3 startPosition;
-    float3 direction;
-
-    RayIntersection getClosestIntersection(const std::vector<std::shared_ptr<SceneObject>>& sceneObjects) const;
-    int getRayColor(const std::vector<std::shared_ptr<SceneObject>>& sceneObjects) const;
-  };
 
   struct RayIntersection {
     bool intersected;
@@ -40,9 +33,21 @@ namespace rt {
   
   class Scene {
   public:
-    Scene(std::vector<std::shared_ptr<SceneObject>> sceneObjects);
+    Scene(std::vector<std::shared_ptr<SceneObject>> sceneObjects, std::vector<Light> lights);
     std::vector<int> renderScene(const SceneCamera& camera) const;
+
+    const std::vector<std::shared_ptr<SceneObject>>& getSceneObjects() const;
+    const std::vector<Light>& getLights() const;
   private:
     std::vector<std::shared_ptr<SceneObject>> sceneObjects;
+    std::vector<Light> lights;
+  };
+
+  struct Ray {
+    float3 startPosition;
+    float3 direction;
+
+    RayIntersection getClosestIntersection(const std::vector<std::shared_ptr<SceneObject>>& sceneObjects) const;
+    SceneColor getRayColor(const Scene& scene) const;
   };
 }
