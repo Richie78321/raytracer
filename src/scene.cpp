@@ -68,9 +68,23 @@ namespace rt {
   SceneColor Ray::getRayColor(const Scene& scene) const {
     RayIntersection closestIntersection = this->getClosestIntersection(scene.getSceneObjects());
     if (!closestIntersection.intersected) {
-      return 0;
+      return SCENE_BLACK;
     }
 
-    return SCENE_WHITE * std::max(linalg::dot(closestIntersection.surfaceNormal, linalg::normalize(float3{ 0, -1, -1 })), 0.f);
+    // TODO: assumming everything opaque for now
+    SceneColor objectColor = SCENE_BLACK;
+    for (auto& light : scene.getLights()) {
+      // Move the ray start slightly towards the target light to stop the ray from intersecting
+      // with the surface that it is originating from.
+      float3 shadowRayDirection = linalg::normalize(light.position - closestIntersection.intersectionPosition);
+      RayIntersection shadowRayIntersection = Ray{ closestIntersection.intersectionPosition + (shadowRayDirection * 0.01f), shadowRayDirection }.getClosestIntersection(scene.getSceneObjects());
+
+      // If the shadow ray did intersect something, determine if it's behind the light source.
+      if (!shadowRayIntersection.intersected || linalg::dot(shadowRayIntersection.intersectionPosition - light.position, shadowRayDirection) > 0) {
+        objectColor = objectColor + (light.getColorAtPosition(closestIntersection.intersectionPosition) * std::max(linalg::dot(shadowRayDirection, closestIntersection.surfaceNormal), 0.0f));
+      }
+    }
+
+    return objectColor;
   }
 }

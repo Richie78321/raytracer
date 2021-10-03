@@ -13,7 +13,7 @@ float4 fromAxisAngle(float3 axis, float angle) {
   return float4{ factor * axis.x, factor * axis.y, factor * axis.z, (float)cos(angle / 2) };
 }
 
-void cameraControl(SceneCamera& camera) {
+void cameraControl(int screenSize, SceneCamera& camera) {
     if (IsKeyPressed(KEY_LEFT)) {
       camera.rotation = linalg::qmul(fromAxisAngle(float3{ 0, 0, 1 }, (float)(-10 * DEG2RAD)), camera.rotation);
     }
@@ -56,9 +56,12 @@ void cameraControl(SceneCamera& camera) {
 }
 
 int main() {
-  std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(float3{ 0, 10, 0 }, 4);
+  std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(float3{ 0, 0, 0 }, 4);
   std::shared_ptr<Plane> plane = std::make_shared<Plane>(float3{ 0, 0, -1 }, float3{ 0, 0, 4 });
-  Scene scene {{ sphere, plane }, { Light{ float3{ 0, 0, -10 }, 1, SCENE_WHITE } }};
+  Scene scene {{ sphere, plane }, {
+    Light{float3{0, 2, -10}, 100, SceneColor{255, 0, 0}},
+    Light{float3{0, -2, -10}, 100, SceneColor{0, 255, 0}},
+  }};
   SceneCamera camera { float3{ 0, 0, 0 }, float4{ 0, 1, 0, 0 }, 60 * DEG2RAD, 250 };
 
   const int screenSize = 800;
@@ -74,7 +77,7 @@ int main() {
     // auto render_end = std::chrono::high_resolution_clock::now();
     // std::cout << "Render Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(render_end - render_start).count() << "\n";
 
-    cameraControl(camera);
+    cameraControl(screenSize, camera);
     
     // auto texture_draw_start = std::chrono::high_resolution_clock::now();
     BeginTextureMode(renderTarget);
