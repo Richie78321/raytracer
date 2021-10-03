@@ -8,51 +8,50 @@
 
 using namespace rt;
 
+constexpr float MOUSE_SENSITIVITY = 2.5f;
+
 float4 fromAxisAngle(float3 axis, float angle) {
   float factor = sin(angle / 2);
   return float4{ factor * axis.x, factor * axis.y, factor * axis.z, (float)cos(angle / 2) };
 }
 
 void cameraControl(int screenSize, SceneCamera& camera) {
-    if (IsKeyPressed(KEY_LEFT)) {
-      camera.rotation = linalg::qmul(fromAxisAngle(float3{ 0, 0, 1 }, (float)(-10 * DEG2RAD)), camera.rotation);
-    }
+  int mouseDeltaX = GetMouseX() - (screenSize / 2);
+  int mouseDeltaY = GetMouseY() - (screenSize / 2);
 
-    if (IsKeyPressed(KEY_RIGHT)) {
-      camera.rotation = linalg::qmul(fromAxisAngle(float3{ 0, 0, 1 }, (float)(10 * DEG2RAD)), camera.rotation);
-    }
+  if (mouseDeltaX != 0) {
+    camera.rotation = linalg::qmul(fromAxisAngle(float3{ 0, 0, 1 }, (float)(mouseDeltaX * MOUSE_SENSITIVITY / screenSize)), camera.rotation);
+  }
 
-    if (IsKeyPressed(KEY_UP)) {
-      camera.rotation = linalg::qmul(camera.rotation, fromAxisAngle(float3{ 1, 0, 0 }, (float)(10 * DEG2RAD)));
-    }
+  if (mouseDeltaY != 0) {
+    camera.rotation = linalg::qmul(camera.rotation, fromAxisAngle(float3{ 1, 0, 0 }, (float)(-mouseDeltaY * MOUSE_SENSITIVITY / screenSize)));
+  }
 
-    if (IsKeyPressed(KEY_DOWN)) {
-      camera.rotation = linalg::qmul(camera.rotation, fromAxisAngle(float3{ 1, 0, 0 }, (float)(-10 * DEG2RAD)));
-    }
+  SetMousePosition(screenSize / 2, screenSize / 2);
 
-    if (IsKeyPressed(KEY_E)) {
-      camera.position.z -= 1;
-    }
+  if (IsKeyPressed(KEY_E)) {
+    camera.position.z -= 1;
+  }
 
-    if (IsKeyPressed(KEY_Q)) {
-      camera.position.z += 1;
-    }
+  if (IsKeyPressed(KEY_Q)) {
+    camera.position.z += 1;
+  }
 
-    if (IsKeyPressed(KEY_W)) {
-      camera.position += linalg::qydir(camera.rotation);
-    }
+  if (IsKeyPressed(KEY_W)) {
+    camera.position += linalg::qydir(camera.rotation);
+  }
 
-    if (IsKeyPressed(KEY_S)) {
-      camera.position -= linalg::qydir(camera.rotation);
-    }
+  if (IsKeyPressed(KEY_S)) {
+    camera.position -= linalg::qydir(camera.rotation);
+  }
 
-    if (IsKeyPressed(KEY_A)) {
-      camera.position -= linalg::qxdir(camera.rotation);
-    }
+  if (IsKeyPressed(KEY_A)) {
+    camera.position -= linalg::qxdir(camera.rotation);
+  }
 
-    if (IsKeyPressed(KEY_D)) {
-      camera.position += linalg::qxdir(camera.rotation);
-    }
+  if (IsKeyPressed(KEY_D)) {
+    camera.position += linalg::qxdir(camera.rotation);
+  }
 }
 
 int main() {
@@ -67,6 +66,7 @@ int main() {
   const int screenSize = 800;
 
   InitWindow(screenSize, screenSize, "Raytracer");
+  HideCursor();
   // SetTargetFPS(30);
 
   RenderTexture2D renderTarget = LoadRenderTexture(camera.resolution, camera.resolution);
