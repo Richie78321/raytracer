@@ -9,6 +9,7 @@
 using namespace rt;
 
 constexpr float MOUSE_SENSITIVITY = 2.5f;
+constexpr float SPEED = 0.5f;
 
 float4 fromAxisAngle(float3 axis, float angle) {
   float factor = sin(angle / 2);
@@ -29,28 +30,40 @@ void cameraControl(int screenSize, SceneCamera& camera) {
 
   SetMousePosition(screenSize / 2, screenSize / 2);
 
-  if (IsKeyPressed(KEY_E)) {
-    camera.position.z -= 1;
+  if (IsKeyDown(KEY_E)) {
+    camera.position.z -= SPEED;
   }
 
-  if (IsKeyPressed(KEY_Q)) {
-    camera.position.z += 1;
+  if (IsKeyDown(KEY_Q)) {
+    camera.position.z += SPEED;
   }
 
-  if (IsKeyPressed(KEY_W)) {
-    camera.position += linalg::qydir(camera.rotation);
+  if (IsKeyDown(KEY_W) || IsKeyDown(KEY_S)) {
+    float3 forward = linalg::qydir(camera.rotation);
+    forward.z = 0;
+    forward = linalg::normalize(forward) * SPEED;
+
+    if (IsKeyDown(KEY_W)) {
+      camera.position += forward;
+    }
+
+    if (IsKeyDown(KEY_S)) {
+      camera.position -= forward;
+    }
   }
 
-  if (IsKeyPressed(KEY_S)) {
-    camera.position -= linalg::qydir(camera.rotation);
-  }
+  if (IsKeyDown(KEY_A) || IsKeyDown(KEY_D)) {
+    float3 right = linalg::qxdir(camera.rotation);
+    right.z = 0;
+    right = linalg::normalize(right) * SPEED;
 
-  if (IsKeyPressed(KEY_A)) {
-    camera.position -= linalg::qxdir(camera.rotation);
-  }
+    if (IsKeyDown(KEY_A)) {
+      camera.position -= right;
+    }
 
-  if (IsKeyPressed(KEY_D)) {
-    camera.position += linalg::qxdir(camera.rotation);
+    if (IsKeyDown(KEY_D)) {
+      camera.position += right;
+    }
   }
 }
 
