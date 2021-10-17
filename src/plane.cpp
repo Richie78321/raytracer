@@ -1,7 +1,11 @@
 #include "plane.h"
 
 namespace rt {
-  Plane::Plane(float3 normal, float3 point) : normal(normal), point(point) {}
+  Plane::Plane(float3 normal, float3 point, bool reflective) : normal(normal), point(point), reflective(reflective) {}
+
+  bool Plane::isReflective() const {
+    return this->reflective;
+  }
 
   RayIntersection Plane::getIntersection(const Ray& ray) const {
     float rayDotNormal = linalg::dot(ray.direction, this->normal);

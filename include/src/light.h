@@ -20,6 +20,7 @@ namespace rt {
 
   const SceneColor SCENE_WHITE { (unsigned char)255, (unsigned char)255, (unsigned char)255, (unsigned char)255 };
   const SceneColor SCENE_BLACK { (unsigned char)0, (unsigned char)0, (unsigned char)0, (unsigned char)255 };
+  const SceneColor SKY_BLUE { (unsigned char)94, (unsigned char)149, (unsigned char)241, (unsigned char)255 };
 
   struct Light {
     float3 position;

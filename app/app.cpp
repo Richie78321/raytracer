@@ -68,11 +68,13 @@ void cameraControl(int screenSize, SceneCamera& camera) {
 }
 
 int main() {
-  std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(float3{ 0, 0, 0 }, 4);
+  std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(float3{ 0, 0, 0 }, 4, true);
+  std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(float3{ 0, 0, 0 }, 4, false);
   std::shared_ptr<Plane> plane = std::make_shared<Plane>(float3{ 0, 0, -1 }, float3{ 0, 0, 4 });
-  Scene scene {{ sphere, plane }, {
-    Light{float3{0, 2, -10}, 100, SceneColor{255, 0, 0}},
+  Scene scene {{ sphere1, sphere2, plane }, {
+    // Light{float3{0, 2, -10}, 100, SceneColor{255, 0, 0}},
     Light{float3{0, -2, -10}, 100, SceneColor{0, 255, 0}},
+    Light{float3{0, 0, -1000}, 100000, SCENE_WHITE},
   }};
   SceneCamera camera { float3{ 0, 0, 0 }, float4{ 0, 1, 0, 0 }, 60 * DEG2RAD, 250 };
 
@@ -81,6 +83,8 @@ int main() {
   InitWindow(screenSize, screenSize, "Raytracer");
   HideCursor();
   // SetTargetFPS(30);
+
+  float inc = 0;
 
   RenderTexture2D renderTarget = LoadRenderTexture(camera.resolution, camera.resolution);
 
@@ -96,7 +100,7 @@ int main() {
     BeginTextureMode(renderTarget);
     ClearBackground(BLACK);
     for (int i = 0; i < render.size(); i++) {
-      DrawRectangle(i % camera.resolution, i / camera.resolution, 1, 1, GetColor(render[i]));
+      DrawPixel(i % camera.resolution, i / camera.resolution, GetColor(render[i]));
     }
     EndTextureMode();
     // auto texture_draw_end = std::chrono::high_resolution_clock::now();
@@ -110,6 +114,9 @@ int main() {
     EndDrawing();
     // auto texture_display_end = std::chrono::high_resolution_clock::now();
     // std::cout << "Texture Display Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(texture_display_end - texture_display_start).count() << "\n\n";
+
+    inc += 0.01f;
+    sphere2->center = float3{inc * sin(inc), inc * cos(inc), 0};
   }
   
   return 0;

@@ -1,7 +1,11 @@
 #include "sphere.h"
 
 namespace rt {
-  Sphere::Sphere(float3 center, float radius) : center(center), radius(radius) {}
+  Sphere::Sphere(float3 center, float radius, bool reflective) : center(center), radius(radius), reflective(reflective) {}
+
+  bool Sphere::isReflective() const {
+    return this->reflective;
+  }
 
   RayIntersection Sphere::getIntersection(const Ray& ray) const {
     // https://en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection
