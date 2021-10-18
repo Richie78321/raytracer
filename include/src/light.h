@@ -14,6 +14,7 @@ namespace rt {
     SceneColor(int hex);
 
     SceneColor operator*(float intensity) const;
+    SceneColor operator*(SceneColor color) const;
     SceneColor operator+(SceneColor other) const;
     int toHex() const;
   };

@@ -18,6 +18,10 @@ namespace rt {
     return SceneColor{ (unsigned char)floor(this->r * intensity), (unsigned char)floor(this->g * intensity), (unsigned char)floor(this->b * intensity), a };
   }
 
+  SceneColor SceneColor::operator*(SceneColor other) const {
+    return SceneColor{ (unsigned char)floor(this->r * (other.r / 255.0f)), (unsigned char)floor(this->g * (other.g / 255.0f)), (unsigned char)floor(this->b * (other.b / 255.0f)), a };
+  }
+
   SceneColor SceneColor::operator+(SceneColor other) const {
     return SceneColor{ clampCharAdd(this->r, other.r), clampCharAdd(this->g, other.g), clampCharAdd(this->b, other.b), clampCharAdd(this->a, other.a) };
   }

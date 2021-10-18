@@ -81,12 +81,12 @@ namespace rt {
       }
     }
 
-    return objectColor;
+    return intersection.objectIntersected->getColor() * objectColor;
   }
 
   SceneColor Ray::getReflectiveColor(const Scene& scene, RayIntersection intersection, int bounces) const {
     float3 reflectionRayDirection = this->direction - (linalg::dot(this->direction, intersection.surfaceNormal) * intersection.surfaceNormal * 2);
-    return Ray{ intersection.intersectionPosition + (reflectionRayDirection * NUDGE_LENGTH), reflectionRayDirection }.getRayColor(scene, bounces - 1);
+    return intersection.objectIntersected->getColor() * Ray{ intersection.intersectionPosition + (reflectionRayDirection * NUDGE_LENGTH), reflectionRayDirection }.getRayColor(scene, bounces - 1);
   }
 
   SceneColor Ray::getRayColor(const Scene& scene, int bounces) const {

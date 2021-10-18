@@ -23,6 +23,7 @@ namespace rt {
   public:
     virtual RayIntersection getIntersection(const Ray& ray) const = 0;
     virtual bool isReflective() const = 0;
+    virtual SceneColor getColor() const = 0;
   };
 
   struct RayIntersection {

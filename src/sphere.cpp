@@ -1,10 +1,14 @@
 #include "sphere.h"
 
 namespace rt {
-  Sphere::Sphere(float3 center, float radius, bool reflective) : center(center), radius(radius), reflective(reflective) {}
+  Sphere::Sphere(float3 center, float radius, SceneColor color, bool reflective) : center(center), radius(radius), color(color), reflective(reflective) {}
 
   bool Sphere::isReflective() const {
     return this->reflective;
+  }
+
+  SceneColor Sphere::getColor() const {
+    return this->color;
   }
 
   RayIntersection Sphere::getIntersection(const Ray& ray) const {

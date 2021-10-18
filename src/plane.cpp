@@ -1,10 +1,14 @@
 #include "plane.h"
 
 namespace rt {
-  Plane::Plane(float3 normal, float3 point, bool reflective) : normal(normal), point(point), reflective(reflective) {}
+  Plane::Plane(float3 normal, float3 point, SceneColor color, bool reflective) : normal(normal), point(point), color(color), reflective(reflective) {}
 
   bool Plane::isReflective() const {
     return this->reflective;
+  }
+
+  SceneColor Plane::getColor() const {
+    return this->color;
   }
 
   RayIntersection Plane::getIntersection(const Ray& ray) const {
