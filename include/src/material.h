@@ -1,3 +1,4 @@
+#pragma once
 #include "light.h"
 
 namespace rt {
@@ -12,7 +13,6 @@ namespace rt {
     StaticMaterial(SceneColor color, float reflectivity);
     virtual SceneColor getColor() const;
     virtual float getReflectivity() const;
-  private:
     SceneColor color;
     float reflectivity;
   };

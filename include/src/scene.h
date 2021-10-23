@@ -4,6 +4,7 @@
 #include <vector>
 #include <linalg.h>
 #include "light.h"
+#include "material.h"
 
 namespace rt {
   using linalg::aliases::float3;
@@ -22,8 +23,7 @@ namespace rt {
   class SceneObject {
   public:
     virtual RayIntersection getIntersection(const Ray& ray) const = 0;
-    virtual bool isReflective() const = 0;
-    virtual SceneColor getColor() const = 0;
+    virtual const Material& getMaterial() const = 0;
   };
 
   struct RayIntersection {

@@ -5,7 +5,8 @@
 using namespace rt;
 
 TEST(SphereIntersection, HandlesNonIntersection) {
-  Sphere sphere(float3{ 0, 10, 0 }, 4);
+  StaticMaterial defaultMaterial = StaticMaterial{SCENE_WHITE, 0.0f};
+  Sphere sphere(float3{ 0, 10, 0 }, 4, defaultMaterial);
   Ray ray { float3{ 0, 0, 0 }, float3{ 1, 0, 0 } };
 
   RayIntersection intersection = sphere.getIntersection(ray);
@@ -14,7 +15,8 @@ TEST(SphereIntersection, HandlesNonIntersection) {
 }
 
 TEST(SphereIntersection, HandlesTangentIntersection) {
-  Sphere sphere(float3{ 0, 10, 0 }, 4);
+  StaticMaterial defaultMaterial = StaticMaterial{SCENE_WHITE, 0.0f};
+  Sphere sphere(float3{ 0, 10, 0 }, 4, defaultMaterial);
   // Make a ray tangent with the sphere
   Ray ray { float3{ 4, 0, 0 }, float3{ 0, 1, 0 } };
 
@@ -24,7 +26,8 @@ TEST(SphereIntersection, HandlesTangentIntersection) {
 }
 
 TEST(SphereIntersection, HandlesDoubleIntersection) {
-  Sphere sphere(float3{ 0, 10, 0 }, 4);
+  StaticMaterial defaultMaterial = StaticMaterial{SCENE_WHITE, 0.0f};
+  Sphere sphere(float3{ 0, 10, 0 }, 4, defaultMaterial);
   Ray ray { float3{ 1, 0, 0 }, float3{ 0, 1, 0 } };
 
   RayIntersection intersection = sphere.getIntersection(ray);
@@ -33,7 +36,8 @@ TEST(SphereIntersection, HandlesDoubleIntersection) {
 }
 
 TEST(SphereIntersection, HandlesCenterIntersection) {
-  Sphere sphere(float3{ 0, 10, 0 }, 4);
+    StaticMaterial defaultMaterial = StaticMaterial{SCENE_WHITE, 0.0f};
+  Sphere sphere(float3{ 0, 10, 0 }, 4, defaultMaterial);
   Ray ray { float3{ 0, 0, 0 }, float3{ 0, 1, 0 } };
 
   RayIntersection intersection = sphere.getIntersection(ray);
@@ -42,7 +46,8 @@ TEST(SphereIntersection, HandlesCenterIntersection) {
 }
 
 TEST(SphereIntersection, IgnoresIntersectionsBehindRay) {
-  Sphere sphere(float3{ 0, -10, 0 }, 4);
+    StaticMaterial defaultMaterial = StaticMaterial{SCENE_WHITE, 0.0f};
+  Sphere sphere(float3{ 0, -10, 0 }, 4, defaultMaterial);
   Ray ray { float3{ 0, 0, 0 }, float3{ 0, 1, 0 } };
 
   RayIntersection intersection = sphere.getIntersection(ray);

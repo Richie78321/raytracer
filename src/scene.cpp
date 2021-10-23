@@ -81,12 +81,12 @@ namespace rt {
       }
     }
 
-    return intersection.objectIntersected->getColor() * objectColor;
+    return intersection.objectIntersected->getMaterial().getColor() * objectColor;
   }
 
   SceneColor Ray::getReflectiveColor(const Scene& scene, RayIntersection intersection, int bounces) const {
     float3 reflectionRayDirection = this->direction - (linalg::dot(this->direction, intersection.surfaceNormal) * intersection.surfaceNormal * 2);
-    return intersection.objectIntersected->getColor() * Ray{ intersection.intersectionPosition + (reflectionRayDirection * NUDGE_LENGTH), reflectionRayDirection }.getRayColor(scene, bounces - 1);
+    return intersection.objectIntersected->getMaterial().getColor() * Ray{ intersection.intersectionPosition + (reflectionRayDirection * NUDGE_LENGTH), reflectionRayDirection }.getRayColor(scene, bounces - 1);
   }
 
   SceneColor Ray::getRayColor(const Scene& scene, int bounces) const {
@@ -98,8 +98,16 @@ namespace rt {
     if (!intersection.intersected) {
       return scene.ambientColor;
     }
-
-    // TODO: Add more modes / variety here
-    return intersection.objectIntersected->isReflective() ? getReflectiveColor(scene, intersection, bounces) : getOpaqueColor(scene, intersection);
+    
+    float intersectedReflectivity = intersection.objectIntersected->getMaterial().getReflectivity();
+    if (intersectedReflectivity == 1.0f) {
+      // Only do reflection pass
+      return getReflectiveColor(scene, intersection, bounces);
+    } else if (intersectedReflectivity == 0.0f) {
+      // Only do opaque pass
+      return getOpaqueColor(scene, intersection);
+    } 
+      
+    return (getReflectiveColor(scene, intersection, bounces) * intersectedReflectivity) + (getOpaqueColor(scene, intersection) * (1.0f - intersectedReflectivity));
   }
 }

@@ -1,15 +1,14 @@
+#pragma once
 #include "scene.h"
 
 namespace rt {
   class Plane : public virtual SceneObject {
   public:
-    Plane(float3 normal, float3 point, SceneColor color = SCENE_WHITE, bool reflective = false);
+    Plane(float3 normal, float3 point, Material& material);
     virtual RayIntersection getIntersection(const Ray& ray) const;
-    virtual bool isReflective() const;
-    virtual SceneColor getColor() const;
+    virtual const Material& getMaterial() const;
 
-    SceneColor color;
-    bool reflective;
+    Material& material;
     float3 normal;
     float3 point;
   };
