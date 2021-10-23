@@ -1,3 +1,5 @@
 #include "scene.h"
 #include "sphere.h"
+#include "light.h"
+#include "material.h"
 #include "plane.h"
